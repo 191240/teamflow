@@ -8,7 +8,7 @@
 |---|---|
 | 前端 | React 19 · TypeScript · Vite · Tailwind CSS · TanStack Query · Zustand · React Hook Form · Zod · dnd-kit · Recharts · STOMP.js |
 | 后端 | Java 21 · Spring Boot 3.2 · Spring Security · JWT · Spring Data JPA · WebSocket/STOMP |
-| 数据库 | H2 文件库（默认，数据落盘、重启不丢）或 MySQL 8（profile 切换），启动自动灌入演示数据 |
+| 数据库 | MySQL 8（默认，持久化存储），可通过 profile 切换为 H2 文件库，启动自动灌入演示数据 |
 | 部署 | Docker / Docker Compose / Nginx（可选） |
 
 ## 功能
@@ -30,22 +30,25 @@
 
 要求：JDK 21 + Maven 3.9+
 
-默认使用 H2 文件库，数据保存到 `backend/data/teamflow.mv.db`，重启不丢失，无需任何额外配置：
+默认使用 MySQL 8，需先建库（连接信息由环境变量提供，不会写入源码）：
+
+```sql
+CREATE DATABASE IF NOT EXISTS teamflow
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
 ```powershell
 cd d:\demo\teamflow\backend
+$env:MYSQL_PASSWORD = "你的 MySQL root 密码"
 mvn spring-boot:run
 ```
 
-切换到 MySQL 8（会自动建库 `teamflow`），用环境变量传连接信息并激活 `mysql` profile：
+可选环境变量：`MYSQL_HOST`（默认 localhost）、`MYSQL_PORT`（默认 3306）、`MYSQL_DB`（默认 teamflow）、`MYSQL_USER`（默认 root）。
+
+想零配置运行（无需 MySQL），可切换到 H2 文件库 profile，数据同样落盘不丢：
 
 ```powershell
-$env:MYSQL_HOST = "localhost"
-$env:MYSQL_PORT = "3306"
-$env:MYSQL_DB = "teamflow"
-$env:MYSQL_USER = "root"
-$env:MYSQL_PASSWORD = "你的密码"
-mvn spring-boot:run -Dspring-boot.run.profiles=mysql
+mvn spring-boot:run -Dspring-boot.run.profiles=h2
 ```
 
 后端地址：
@@ -54,21 +57,13 @@ mvn spring-boot:run -Dspring-boot.run.profiles=mysql
 http://localhost:8083
 ```
 
-H2 控制台（仅默认 H2 模式）：
+H2 控制台（仅 `h2` profile 下可用）：
 
 ```text
 http://localhost:8083/h2-console
 ```
 
-JDBC URL：
-
-```text
-jdbc:h2:file:./data/teamflow;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
-```
-
-用户 `sa`，密码留空。
-
-> 想清空演示数据重新灌入：停止后端，删除 `backend/data` 目录后重启即可。
+JDBC URL：`jdbc:h2:file:./data/teamflow;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE`，用户 `sa`，密码留空。
 
 ### 2. 启动前端
 
@@ -147,8 +142,8 @@ teamflow/
 │       └── DataInitializer.java
 ├── src/test/              JUnit + MockMvc 集成测试
 └── src/main/resources/
-    ├── application.yml        默认 H2 文件库配置
-    └── application-mysql.yml   MySQL profile
+    ├── application.yml        默认 MySQL 配置（环境变量注入连接信息）
+    └── application-h2.yml      H2 文件库 profile
 └── frontend/
     ├── src/
     │   ├── components/    布局、任务卡片、任务抽屉

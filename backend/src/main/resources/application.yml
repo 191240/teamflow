@@ -5,20 +5,18 @@ spring:
   application:
     name: teamflow-backend
   datasource:
-    url: jdbc:h2:file:./data/teamflow;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:teamflow}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
     open-in-view: false
-  h2:
-    console:
-      enabled: true
 
 jwt:
   secret: teamflow-local-secret-key-please-change-in-production-123456

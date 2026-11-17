@@ -3,6 +3,10 @@ services:
     build: ./backend
     ports:
       - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: h2
+    volumes:
+      - backend-data:/app/data
     restart: unless-stopped
 
   frontend:
@@ -12,3 +16,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  backend-data:
