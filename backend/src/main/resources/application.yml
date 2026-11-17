@@ -1,0 +1,28 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: teamflow-backend
+  datasource:
+    url: jdbc:h2:file:./data/teamflow;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+
+jwt:
+  secret: teamflow-local-secret-key-please-change-in-production-123456
+  expiration-ms: 86400000
+
+cors:
+  allowed-origin: http://localhost:5177

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+target/
+.env
+*.log
+.DS_Store
+.idea/
+.vscode/
+node_modules_broken*/
+package-lock-broken.json
+backend/data/
